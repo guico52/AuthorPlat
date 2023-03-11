@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.generator.config.GlobalConfig;
 import com.baomidou.mybatisplus.generator.config.PackageConfig;
 import com.baomidou.mybatisplus.generator.config.StrategyConfig;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
+import org.apache.ibatis.annotations.Mapper;
 
 public class MyBatisPlusGenerator {
 
@@ -19,7 +20,13 @@ public class MyBatisPlusGenerator {
                         .outputDir(path+"/src/main/java/"))
                 .packageConfig(builder -> builder.parent("com.guico.authorplat"))
                 .strategyConfig(builder -> builder.addInclude("t_user","t_role","t_permission","t_article","t_category", "t_tag")
-                        .addTablePrefix("t_"))
+                        .addTablePrefix("t_")
+                        .controllerBuilder().enableRestStyle()//开启@RestController而非@Controller
+                        .mapperBuilder().mapperAnnotation(Mapper.class)//开启@Mapper注解
+
+                )
+
+
                 .execute();
     }
 }
