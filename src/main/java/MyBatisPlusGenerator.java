@@ -16,8 +16,8 @@ public class MyBatisPlusGenerator {
                 "author_plat", "F6FWtzj6wybwyJG4")
                 .globalConfig(builder ->
                         builder.author("guico")
-                        .outputDir(path+"/src/main/java/com/guico/authorplat/"))
-                .packageConfig(builder -> builder.parent(""))
+                        .outputDir(path+"/src/main/java/"))
+                .packageConfig(builder -> builder.parent("com.guico.authorplat"))
                 .strategyConfig(builder -> builder.addInclude("t_user","t_role","t_permission","t_article","t_category", "t_tag")
                         .addTablePrefix("t_"))
                 .execute();
