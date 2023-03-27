@@ -1,6 +1,6 @@
 package com.guico.authorplat.mapper;
 
-import com.guico.authorplat.entity.Article;
+import com.guico.authorplat.entity.Type;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2023-03-16
  */
 @Mapper
-public interface ArticleMapper extends BaseMapper<Article> {
+public interface TypeMapper extends BaseMapper<Type> {
 
 }

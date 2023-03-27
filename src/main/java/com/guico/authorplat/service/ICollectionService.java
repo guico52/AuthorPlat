@@ -1,6 +1,6 @@
 package com.guico.authorplat.service;
 
-import com.guico.authorplat.entity.Article;
+import com.guico.authorplat.entity.Collection;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author guico
  * @since 2023-03-16
  */
-public interface IArticleService extends IService<Article> {
+public interface ICollectionService extends IService<Collection> {
 
+    boolean createDefaultCollection(String username);
 }

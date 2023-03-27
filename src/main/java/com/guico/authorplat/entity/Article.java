@@ -1,66 +1,81 @@
 package com.guico.authorplat.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 文章表
+ * 
  * </p>
  *
  * @author guico
- * @since 2023-03-11
+ * @since 2023-03-16
  */
 @TableName("t_article")
 public class Article implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-      @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+    /**
+     * 文章id
+     */
+      private Integer id;
 
     /**
-     * 标题
+     * 文章标题
      */
     private String title;
 
     /**
-     * 内容
+     * 文章内容
      */
     private String content;
 
     /**
-     * 发表用户ID
+     * 分区
      */
-    private Integer userId;
+    private Integer typeId;
 
     /**
-     * 分类ID
+     * 标签
      */
-    private Integer categoryId;
+    private String tips;
 
     /**
-     * 是否隐藏(0:不隐藏，1:隐藏)
+     * 文章是否被审核
      */
-    private Boolean isHidden;
+    private Byte isChecked;
 
     /**
-     * 是否审核(0:未审核，1:审核)
+     * 如果文章被审核，审核的username
      */
-    private Boolean isReviewed;
+    private String checkerUsername;
 
     /**
-     * 创建时间
+     * 审核留言，80字以内
      */
-    private LocalDateTime createTime;
+    private String checkerMsg;
 
     /**
-     * 更新时间
+     * 提交时间
      */
-    private LocalDateTime updateTime;
+    private LocalDateTime submitTime;
+
+    /**
+     * 审核通过时间
+     */
+    private LocalDateTime checkPassTime;
+
+    /**
+     * 点赞数
+     */
+    private Integer likes;
+
+    /**
+     * 浏览数
+     */
+    private Integer watches;
 
     public Integer getId() {
         return id;
@@ -86,52 +101,76 @@ public class Article implements Serializable {
         this.content = content;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getTypeId() {
+        return typeId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setTypeId(Integer typeId) {
+        this.typeId = typeId;
     }
 
-    public Integer getCategoryId() {
-        return categoryId;
+    public String getTips() {
+        return tips;
     }
 
-    public void setCategoryId(Integer categoryId) {
-        this.categoryId = categoryId;
+    public void setTips(String tips) {
+        this.tips = tips;
     }
 
-    public Boolean getIsHidden() {
-        return isHidden;
+    public Byte getIsChecked() {
+        return isChecked;
     }
 
-    public void setIsHidden(Boolean isHidden) {
-        this.isHidden = isHidden;
+    public void setIsChecked(Byte isChecked) {
+        this.isChecked = isChecked;
     }
 
-    public Boolean getIsReviewed() {
-        return isReviewed;
+    public String getCheckerUsername() {
+        return checkerUsername;
     }
 
-    public void setIsReviewed(Boolean isReviewed) {
-        this.isReviewed = isReviewed;
+    public void setCheckerUsername(String checkerUsername) {
+        this.checkerUsername = checkerUsername;
     }
 
-    public LocalDateTime getCreateTime() {
-        return createTime;
+    public String getCheckerMsg() {
+        return checkerMsg;
     }
 
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
+    public void setCheckerMsg(String checkerMsg) {
+        this.checkerMsg = checkerMsg;
     }
 
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
+    public LocalDateTime getSubmitTime() {
+        return submitTime;
     }
 
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
+    public void setSubmitTime(LocalDateTime submitTime) {
+        this.submitTime = submitTime;
+    }
+
+    public LocalDateTime getCheckPassTime() {
+        return checkPassTime;
+    }
+
+    public void setCheckPassTime(LocalDateTime checkPassTime) {
+        this.checkPassTime = checkPassTime;
+    }
+
+    public Integer getLikes() {
+        return likes;
+    }
+
+    public void setLikes(Integer likes) {
+        this.likes = likes;
+    }
+
+    public Integer getWatches() {
+        return watches;
+    }
+
+    public void setWatches(Integer watches) {
+        this.watches = watches;
     }
 
     @Override
@@ -140,12 +179,15 @@ public class Article implements Serializable {
         "id = " + id +
         ", title = " + title +
         ", content = " + content +
-        ", userId = " + userId +
-        ", categoryId = " + categoryId +
-        ", isHidden = " + isHidden +
-        ", isReviewed = " + isReviewed +
-        ", createTime = " + createTime +
-        ", updateTime = " + updateTime +
+        ", typeId = " + typeId +
+        ", tips = " + tips +
+        ", isChecked = " + isChecked +
+        ", checkerUsername = " + checkerUsername +
+        ", checkerMsg = " + checkerMsg +
+        ", submitTime = " + submitTime +
+        ", checkPassTime = " + checkPassTime +
+        ", likes = " + likes +
+        ", watches = " + watches +
         "}";
     }
 }
