@@ -1,12 +1,14 @@
 package com.guico.authorplat.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author guico
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @TableName("t_article")
 public class Article implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
     /**
@@ -50,7 +53,7 @@ public class Article implements Serializable {
     /**
      * 如果文章被审核，审核的username
      */
-    private String checkerUsername;
+    private Integer checkerId;
 
     /**
      * 审核留言，80字以内
@@ -125,12 +128,12 @@ public class Article implements Serializable {
         this.isChecked = isChecked;
     }
 
-    public String getCheckerUsername() {
-        return checkerUsername;
+    public Integer getCheckerId() {
+        return checkerId;
     }
 
-    public void setCheckerUsername(String checkerUsername) {
-        this.checkerUsername = checkerUsername;
+    public void setCheckerId(Integer checkerId) {
+        this.checkerId = checkerId;
     }
 
     public String getCheckerMsg() {
@@ -182,7 +185,7 @@ public class Article implements Serializable {
         ", typeId = " + typeId +
         ", tips = " + tips +
         ", isChecked = " + isChecked +
-        ", checkerUsername = " + checkerUsername +
+        ", checkerId = " + checkerId+
         ", checkerMsg = " + checkerMsg +
         ", submitTime = " + submitTime +
         ", checkPassTime = " + checkPassTime +

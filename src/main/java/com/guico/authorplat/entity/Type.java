@@ -1,12 +1,14 @@
 package com.guico.authorplat.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author guico
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 @TableName("t_type")
 public class Type implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = 1L;
 
       private Integer id;
@@ -27,7 +30,7 @@ public class Type implements Serializable {
     /**
      * 创建者username
      */
-    private String ownerUsername;
+    private Integer ownerUsername;
 
     /**
      * 创建时间
@@ -55,11 +58,11 @@ public class Type implements Serializable {
         this.name = name;
     }
 
-    public String getOwnerUsername() {
+    public Integer getOwnerUsername() {
         return ownerUsername;
     }
 
-    public void setOwnerUsername(String ownerUsername) {
+    public void setOwnerUsername(Integer ownerUsername) {
         this.ownerUsername = ownerUsername;
     }
 

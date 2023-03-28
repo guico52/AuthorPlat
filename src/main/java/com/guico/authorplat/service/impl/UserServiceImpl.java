@@ -195,7 +195,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 //            清除redis中的user
             redisTool.clearRegisterObject(username);
 //            创建默认收藏夹
-            collectionService.createDefaultCollection(user.getUsername());
+            collectionService.createDefaultCollection(user.getId());
             return ACTIVATE_SUCCESS_HTML;
         }
         return ACTIVATE_FAIL_HTML.formatted("网络异常");

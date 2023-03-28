@@ -13,5 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ICollectionService extends IService<Collection> {
 
-    boolean createDefaultCollection(String username);
+    boolean createDefaultCollection(Integer userId);
 }

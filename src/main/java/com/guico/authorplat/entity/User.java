@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author guico
@@ -24,8 +24,10 @@ public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    private Integer id;
+
     /**
-     * 用户昵称/主键
+     * 用户昵称
      */
       private String username;
 
@@ -58,6 +60,14 @@ public class User implements Serializable {
      * 用户上次认证登录时间
      */
     private LocalDateTime lastLoginTime;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -118,6 +128,7 @@ public class User implements Serializable {
     @Override
     public String toString() {
         return "User{" +
+                "id = " + id +
         "username = " + username +
         ", pwd = " + pwd +
         ", email = " + email +
