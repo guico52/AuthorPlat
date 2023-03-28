@@ -1,15 +1,15 @@
 package com.guico.authorplat.service.impl;
 
 import DTO.Result;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.guico.authorplat.JwtTool;
 import com.guico.authorplat.entity.User;
 import com.guico.authorplat.mapper.UserMapper;
 import com.guico.authorplat.redis.RedisTool;
 import com.guico.authorplat.service.IUserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -37,26 +37,17 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
-    // 设置注册token过期时间（小时）
-    private static final int REGISTER_TOKEN_EXPIRE_HOURS = 3;
-    // 设置登录token过期时间（天）
-    private static final int LOGIN_TOKEN_EXPIRE_DAYS = 7;
-    // 设置注册token过期时间（毫秒）
-    private static final int TOKEN_EXPIRE = REGISTER_TOKEN_EXPIRE_HOURS * 60 * 60 * 1000;
-    // 设置登录token过期时间（毫秒）
-    private static final int LOGIN_TOKEN_EXPIRE = LOGIN_TOKEN_EXPIRE_DAYS * 24 * 60 * 60 * 1000;
-    private static final String RESET_PASSWORD_SUCCESS_HTML =
-            """
-    <p>您已经成功重置密码!</p>      \s
-            """;
+    private static final String RESET_PASSWORD_SUCCESS_HTML = """
+            <p>您已经成功重置密码!</p>      \s
+                    """;
 
     // 设置注册时的sessionName
 
     @Resource
     private JavaMailSenderImpl javaMailSender;
 
-    @Value("${sa-token.jwt-secret-key}")
-    private String jwtKey;
+    @Resource
+    private JwtTool jwtTool;
 
     @Value("${spring.mail.username}")
     private String from;
@@ -73,27 +64,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     private static final String ENVIRONMENT = "http://localhost:8081";
 
-    private static final String REGISTER_EMAIL_HTML =
-             """
+    private static final String REGISTER_EMAIL_HTML = """
              <h1>欢迎您使用Author-plat</h1>
              <p>尊敬的用户%s，我们已经收到了您的注册请求，请您<a href="%s/api/user/activate?token=%s">点击链接</a>激活您的账户，链接的有效时间为3小时，请您尽快处理。</p>
             """;
-    private static final String ACTIVATE_SUCCESS_HTML =
-            """
+    private static final String ACTIVATE_SUCCESS_HTML = """
                 <p>您已经成功完成注册!</p>      \s
             """;
-    private static final String ACTIVATE_FAIL_HTML =
-            """
+    private static final String ACTIVATE_FAIL_HTML = """
                 <p>注册失败，原因可能为：%s，请您稍后重试。</p>        \s
             """;
-    private static final String RESET_PASSWORD_EMAIL_HTML =
-            """
+    private static final String RESET_PASSWORD_EMAIL_HTML = """
                 <h1>欢迎您使用Author-plat</h1>
                 <p>尊敬的用户%s，我们已经收到了您的重置密码请求，请您<a href="%s/api/user/resetPassword?token=%s">点击链接</a>重置您的密码，链接的有效时间为3小时，请您尽快处理。</p>
             """;
 
-    private static final String RESET_PASSWORD_FAIL_HTML =
-            """        
+    private static final String RESET_PASSWORD_FAIL_HTML = """        
                 <p>重置密码失败，原因可能为：%s，请您稍后重试。</p>        \s
             """;
 
@@ -125,9 +111,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 //            设置Session中的参数
             redisTool.insertRegisterObject(user);
 //            生成jwttoken
-            String token = JWT.create()
-                    .setKey(jwtKey.getBytes())
-                    .setNotBefore(DateUtil.date()).setIssuedAt(DateUtil.date()).setExpiresAt(DateUtil.offsetMillisecond(DateUtil.date(), TOKEN_EXPIRE)).setPayload("username", username).sign();
+            String token = jwtTool.createRegisterToken(username);
             String content = generateRegisterMail(username, token);
             CompletableFuture<Boolean> sendSuccess = sendMail(email, content);
             if (!sendSuccess.get()) {
@@ -154,15 +138,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = query().eq("username", username).eq("pwd", password).one();
         if (user != null) {
 //            生成token
-            String token = JWT.create().setKey(jwtKey.getBytes()).setNotBefore(DateUtil.date()).setIssuedAt(DateUtil.date()).setExpiresAt(DateUtil.offsetMillisecond(DateUtil.date(), LOGIN_TOKEN_EXPIRE)).setPayload("username", username).sign();
-//            更新用户登录时间
+            String token = jwtTool.createLoginToken(username);
+            //            更新用户登录时间
             user.setLastLoginTime(LocalDateTime.now());
             updateById(user);
 //            将token存入redis
             redisTool.insertLoginObject(user);
             return Result.success(token);
-        }
-        return Result.fail("用户名或密码错误");
+        } return Result.fail("用户名或密码错误");
     }
 
     //    退出登录业务需要前端删除token，后端删除用户相关信息
@@ -179,14 +162,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public String activate(String token) {
 //        认证token，此方法仅能验证token是否合法或过期
-        boolean success = JWTUtil.verify(token, jwtKey.getBytes());
+        boolean success = jwtTool.verifyToken(token);
 //        解析并获取payload
         JWT jwt = JWTUtil.parseToken(token);
         String username = (String) jwt.getPayload("username");
 //        获取session中的user
         User user = redisTool.getRegisterObject(username);
         if (user == null) {
-            return ACTIVATE_FAIL_HTML.formatted("服务器未检测到"+username+"的信息");
+            return ACTIVATE_FAIL_HTML.formatted("服务器未检测到" + username + "的信息");
         }
 //        比对信息，验证payload和token合法性
         if (user.getUsername().equals(username) && success) {
@@ -214,15 +197,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         password = new String(DigestUtil.md5(password));
         user.setPwd(password);
         redisTool.insertResetPasswordObject(user);
-        String token = JWT.create()
-                .setPayload("username",username)
-                .setKey(jwtKey.getBytes())
-                .setNotBefore(DateUtil.date())
-                .setIssuedAt(DateUtil.date())
-                .setExpiresAt(DateUtil.offsetMillisecond(DateUtil.date(),TOKEN_EXPIRE))
-                .sign();
-        String content = generateResetPasswordMail(username,token);
-        boolean success = sendMail(email,content).get();
+        String token = jwtTool.createResetPasswordToken(username);
+        String content = generateResetPasswordMail(username, token);
+        boolean success = sendMail(email, content).get();
 //        发送成功，返回成功信息
         if (success) {
             log.info("用户重置密码成功，已向用户发送重置密码邮件");
@@ -235,19 +212,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     @Override
     public String resetPassword(String token) {
 //        验证token
-        boolean success = JWTUtil.verify(token, jwtKey.getBytes());
+        boolean success = jwtTool.verifyToken(token);
 //        解析token
         JWT jwt = JWTUtil.parseToken(token);
         String username = (String) jwt.getPayload("username");
 //        获取用户信息
         User user = redisTool.getResetPasswordObject(username);
         if (user == null) {
-            return RESET_PASSWORD_FAIL_HTML.formatted("服务器未检测到"+username+"的信息");
+            return RESET_PASSWORD_FAIL_HTML.formatted("服务器未检测到" + username + "的信息");
         }
 //        比对信息，验证payload和token合法性
         if (user.getUsername().equals(username) && success) {
 //            保存用户信息
-            update().set("pwd",user.getPwd()).eq("username",username).update();
+            update().set("pwd", user.getPwd()).eq("username", username).update();
 //            清除redis中的user
             redisTool.clearResetPasswordObject(username);
             return RESET_PASSWORD_SUCCESS_HTML;
