@@ -29,8 +29,6 @@ spring:
                 enable: true
                 required: true
 
-
-
 sa-token:
   roles: admin, root, normal
   activity-timeout: 300000

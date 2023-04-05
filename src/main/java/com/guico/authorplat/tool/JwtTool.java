@@ -1,4 +1,4 @@
-package com.guico.authorplat;
+package com.guico.authorplat.tool;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.jwt.JWT;
@@ -32,8 +32,8 @@ public class JwtTool {
         return jwt.sign();
     }
 
-    public String createLoginToken(String username){
-        return createToken(LOGIN_TOKEN_EXPIRE, Map.of("username", username));
+    public String createLoginToken(String username, int role){
+        return createToken(LOGIN_TOKEN_EXPIRE, Map.of("username", username, "role", String.valueOf(role)));
     }
 
     public String createRegisterToken(String username){
@@ -42,6 +42,10 @@ public class JwtTool {
 
     public String createResetPasswordToken(String username){
         return createToken(TOKEN_EXPIRE, Map.of("username", username));
+    }
+
+    public Integer getRole(String token){
+        return (Integer) JWTUtil.parseToken(token).getPayload("role");
     }
 
     public boolean verifyToken(String token){

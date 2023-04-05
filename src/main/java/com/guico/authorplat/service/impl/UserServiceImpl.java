@@ -5,15 +5,14 @@ import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.guico.authorplat.JwtTool;
 import com.guico.authorplat.entity.User;
 import com.guico.authorplat.mapper.UserMapper;
 import com.guico.authorplat.redis.RedisTool;
 import com.guico.authorplat.service.IUserService;
+import com.guico.authorplat.tool.JwtTool;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -53,10 +52,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
     private String from;
 
 
-    @Autowired
+    @Resource
     RedisTool redisTool;
 
-    @Autowired
+    @Resource
     HttpServletRequest request;
 
     @Resource
@@ -138,14 +137,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         User user = query().eq("username", username).eq("pwd", password).one();
         if (user != null) {
 //            生成token
-            String token = jwtTool.createLoginToken(username);
-            //            更新用户登录时间
+            String token = jwtTool.createLoginToken(username, user.getRole());
+//            更新用户登录时间
             user.setLastLoginTime(LocalDateTime.now());
             updateById(user);
-//            将token存入redis
-            redisTool.insertLoginObject(user);
             return Result.success(token);
-        } return Result.fail("用户名或密码错误");
+        }
+        return Result.fail("用户名或密码错误");
     }
 
     //    退出登录业务需要前端删除token，后端删除用户相关信息
@@ -232,14 +230,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         return RESET_PASSWORD_FAIL_HTML.formatted("网络异常");
     }
 
+
+    //生成注册邮件
     private String generateRegisterMail(String username, String token) {
         return REGISTER_EMAIL_HTML.formatted(username, ENVIRONMENT, token);
     }
 
+    //生成重置密码邮件
     private String generateResetPasswordMail(String username, String token) {
         return RESET_PASSWORD_EMAIL_HTML.formatted(username, ENVIRONMENT, token);
     }
 
+    // 异步发送邮件
     @Async
     CompletableFuture<Boolean> sendMail(String to, String content) {
         try {

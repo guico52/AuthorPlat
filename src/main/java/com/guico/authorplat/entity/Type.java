@@ -30,7 +30,7 @@ public class Type implements Serializable {
     /**
      * 创建者username
      */
-    private Integer ownerUsername;
+    private String ownerId;
 
     /**
      * 创建时间
@@ -58,12 +58,12 @@ public class Type implements Serializable {
         this.name = name;
     }
 
-    public Integer getOwnerUsername() {
-        return ownerUsername;
+    public String getOwnerId() {
+        return ownerId;
     }
 
-    public void setOwnerUsername(Integer ownerUsername) {
-        this.ownerUsername = ownerUsername;
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 
     public LocalDateTime getCreatedTime() {
@@ -87,7 +87,7 @@ public class Type implements Serializable {
         return "Type{" +
         "id = " + id +
         ", name = " + name +
-        ", ownerUsername = " + ownerUsername +
+        ", ownerId = " + ownerId +
         ", createdTime = " + createdTime +
         ", parentId = " + parentId +
         "}";

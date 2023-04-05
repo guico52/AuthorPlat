@@ -33,7 +33,7 @@ public class Collection implements Serializable {
     /**
      * 收藏夹主人username
      */
-    private Integer OwnerId;
+    private String OwnerId;
 
     /**
      * 收藏夹创建时间
@@ -61,11 +61,11 @@ public class Collection implements Serializable {
         this.name = name;
     }
 
-    public Integer getOwnerId() {
+    public String getOwnerId() {
         return OwnerId;
     }
 
-    public void setOwnerId(Integer ownerId) {
+    public void setOwnerId(String ownerId) {
         this.OwnerId = ownerId;
     }
 

@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 public class CollectionServiceImpl extends ServiceImpl<CollectionMapper, Collection> implements ICollectionService {
 
     @Override
-    public boolean createDefaultCollection(Integer username) {
+    public boolean createDefaultCollection(String username) {
         Collection collection = new Collection();
         collection.setCreateTime(LocalDateTime.now());
         collection.setDefault(true);

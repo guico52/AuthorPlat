@@ -24,7 +24,7 @@ public class User implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    private Integer id;
+    private String id;
 
     /**
      * 用户昵称
@@ -61,11 +61,11 @@ public class User implements Serializable {
      */
     private LocalDateTime lastLoginTime;
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(String id) {
         this.id = id;
     }
 

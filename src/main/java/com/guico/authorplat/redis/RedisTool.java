@@ -21,6 +21,8 @@ public class RedisTool {
         this.template = redisTemplate;
     }
 
+    /*=================================================  insert  =================================================*/
+
     public void insertObject(String key, Object obj){
         insertObject(key, obj, DEFAULT_TIME_OUT, DEFAULT_TIME_UNIT);
     }
@@ -30,15 +32,13 @@ public class RedisTool {
         template.opsForValue().set(key,json,timeout,unit);
     }
 
-    public void insertLoginObject(User user){
-        insertObject(USER_LOGIN+user.getUsername(),user,LOGIN_TIME_OUT,LOGIN_TIME_UNIT);
-    }
-
     public void insertRegisterObject(User user){
         insertObject(USER_REGISTER+user.getUsername(),user);
     }
 
     public void insertResetPasswordObject(User user){insertObject(USER_RESET_PASSWORD+user.getUsername(),user);}
+
+    /*=================================================  get  =================================================*/
 
     public <T> T getObject (String key, Class<T> clazz){
         String json = template.opsForValue().get(key);
@@ -53,9 +53,8 @@ public class RedisTool {
         return getObject(USER_RESET_PASSWORD+username, User.class);
     }
 
-    public User getLoginObject(String username){
-        return getObject(USER_LOGIN+username, User.class);
-    }
+
+    /*=================================================  delete  =================================================*/
 
     public void deleteObject(String key){
         template.delete(key);
